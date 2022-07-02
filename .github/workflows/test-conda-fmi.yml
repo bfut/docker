@@ -1,0 +1,46 @@
+name: Test conda-fmi
+
+on:
+  workflow_dispatch:
+
+env:
+  DIRECTORY: conda-fmi
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+
+    name: Pull, and run
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Pull Docker image
+        run: |
+          docker pull ${{ secrets.DOCKER_USERNAME }}/${{ env.DIRECTORY }}:latest
+          
+      - name: Run Docker image locally
+        run: |
+          echo
+          docker images
+          docker run ${{ secrets.DOCKER_USERNAME }}/${{ env.DIRECTORY }}:latest
+          
+      - name: Run Docker image with script
+        run: |
+          cd test-${{ env.DIRECTORY }}
+          echo $PWD
+          
+          chmod +x demo.sh
+          docker run -v "$(pwd)":"/test-conda-fmi" -w "/test-conda-fmi" -i ${{ secrets.DOCKER_USERNAME }}/conda-fmi ./demo.sh
+          
+          cd ./.out
+          ls -lg
+
+      - name: Upload output
+        uses: actions/upload-artifact@v3
+        with:
+          name: test-${{ env.DIRECTORY }}-out
+          path: test-${{ env.DIRECTORY }}/.out/*
+          retention-days: 1

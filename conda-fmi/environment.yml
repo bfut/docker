@@ -1,0 +1,16 @@
+name: conda-fmi
+channels:
+- conda-forge
+# - defaults
+dependencies:
+  - cmake
+  - git
+  - gxx
+  - make
+  - matplotlib
+  - numpy
+  - python=3.10
+  - pip
+  - pytest
+  - pyfmi  # https://anaconda.org/conda-forge/pyfmi https://github.com/modelon-community/PyFMI
+  - scikit-learn
